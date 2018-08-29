@@ -1,8 +1,9 @@
 ---
-url: http://ca.example.com:7052
+url: http://localhost:7054
 skipTLSValidation: true
-mspId: comp1Msp
+mspId: Org1MSP
 crypto:
   family: ecdsa
   algorithm: P256-SHA256
   hash: SHA2-256
+filepath: /home/vagrant/ca1
