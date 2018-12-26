@@ -147,7 +147,7 @@ type CaEnrollmentRequest struct {
 }
 
 type CSRInfo struct {
-	CN           string           `json:CN"`
+	CN           string           `json:"CN"`
 	Names        []csr.Name       `json:"names,omitempty"`
 	Hosts        []string         `json:"hosts,omitempty"`
 	KeyRequest   *BasicKeyRequest `json:"key,omitempty"`
