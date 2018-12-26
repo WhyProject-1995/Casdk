@@ -77,13 +77,13 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 		return err
 	}
 	caFile := path.Join(caPath, "ca-cert.pem")
-	ca_pem := pem.EncodeToMemory(
+	caPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "CERTIFICATE",
 			Bytes: cainfo.RootCertificates[0].Raw,
 		},
 	)
-	err = ioutil.WriteFile(caFile, ca_pem, 0644)
+	err = ioutil.WriteFile(caFile, caPem, 0644)
 	if err != nil {
 		return err
 	}
@@ -96,12 +96,12 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 		}
 		caFile = path.Join(intercaPath, "intermediate-certs.pem")
 		for _, interca := range cainfo.IntermediateCertificates {
-			interca_pem := pem.EncodeToMemory(interca)
+			intercaPem := pem.EncodeToMemory(interca)
 			fd, err := os.OpenFile(caFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, os.ModePerm)
 			if err != nil {
 				return err
 			}
-			fd.Write(interca_pem)
+			fd.Write(intercaPem)
 			fd.Write([]byte("\n"))
 			fd.Close()
 		}
@@ -113,13 +113,13 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 		return err
 	}
 	certFile := path.Join(certPath, "cert.pem")
-	cert_pem := pem.EncodeToMemory(
+	certPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "CERTIFICATE",
 			Bytes: i.Certificate.Raw,
 		},
 	)
-	err = ioutil.WriteFile(certFile, cert_pem, 0644)
+	err = ioutil.WriteFile(certFile, certPem, 0644)
 	if err != nil {
 		return err
 	}
@@ -130,24 +130,24 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 		return err
 	}
 	keyFile := path.Join(keyPath, "key.pem")
-	key_byte, err := x509.MarshalECPrivateKey(i.PrivateKey.(*ecdsa.PrivateKey))
+	keyByte, err := x509.MarshalECPrivateKey(i.PrivateKey.(*ecdsa.PrivateKey))
 	if err != nil {
 		return err
 	}
-	key_pem := pem.EncodeToMemory(
+	keyPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "PRIVATE KEY",
-			Bytes: key_byte,
+			Bytes: keyByte,
 		},
 	)
-	err = ioutil.WriteFile(keyFile, key_pem, 0644)
+	err = ioutil.WriteFile(keyFile, keyPem, 0644)
 	if err != nil {
 		return nil
 	}
 	return nil
 }
 
-//保存crl
+//Save crl
 func SaveCrl(ca *FabricCAClient, request *CARevocationRequest, result *CARevokeResult) error {
 	var err error
 	mspfile := request.EnrollmentId + "msp"
@@ -163,13 +163,13 @@ func SaveCrl(ca *FabricCAClient, request *CARevocationRequest, result *CARevokeR
 	if err != nil {
 		return err
 	}
-	crl_pem := pem.EncodeToMemory(
+	crlPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "X509 CRL",
 			Bytes: crl,
 		},
 	)
-	err = ioutil.WriteFile(crlFile, crl_pem, 0644)
+	err = ioutil.WriteFile(crlFile, crlPem, 0644)
 	if err != nil {
 		return err
 	}
@@ -187,13 +187,13 @@ func (i *Identity) SaveTLScert(ca *FabricCAClient, cainfo *CAGetCertResponse) er
 		return err
 	}
 	caFile := path.Join(caPath, "ca-cert.pem")
-	ca_pem := pem.EncodeToMemory(
+	caPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "CERTIFICATE",
 			Bytes: cainfo.RootCertificates[0].Raw,
 		},
 	)
-	err = ioutil.WriteFile(caFile, ca_pem, 0644)
+	err = ioutil.WriteFile(caFile, caPem, 0644)
 	if err != nil {
 		return err
 	}
@@ -223,13 +223,13 @@ func (i *Identity) SaveTLScert(ca *FabricCAClient, cainfo *CAGetCertResponse) er
 		return err
 	}
 	certFile := path.Join(certPath, "cert.pem")
-	cert_pem := pem.EncodeToMemory(
+	certPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "CERTIFICATE",
 			Bytes: i.Certificate.Raw,
 		},
 	)
-	err = ioutil.WriteFile(certFile, cert_pem, 0644)
+	err = ioutil.WriteFile(certFile, certPem, 0644)
 	if err != nil {
 		return err
 	}
@@ -240,17 +240,17 @@ func (i *Identity) SaveTLScert(ca *FabricCAClient, cainfo *CAGetCertResponse) er
 		return err
 	}
 	keyFile := path.Join(keyPath, "key.pem")
-	key_byte, err := x509.MarshalECPrivateKey(i.PrivateKey.(*ecdsa.PrivateKey))
+	keyByte, err := x509.MarshalECPrivateKey(i.PrivateKey.(*ecdsa.PrivateKey))
 	if err != nil {
 		return err
 	}
-	key_pem := pem.EncodeToMemory(
+	keyPem := pem.EncodeToMemory(
 		&pem.Block{
 			Type:  "PRIVATE KEY",
-			Bytes: key_byte,
+			Bytes: keyByte,
 		},
 	)
-	err = ioutil.WriteFile(keyFile, key_pem, 0644)
+	err = ioutil.WriteFile(keyFile, keyPem, 0644)
 	if err != nil {
 		return nil
 	}
