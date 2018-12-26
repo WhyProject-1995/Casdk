@@ -1,18 +1,18 @@
 package Casdk
 
 import (
-	"io/ioutil"
-	"gopkg.in/yaml.v2"
-	"os"
 	"fmt"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"os"
 )
 
 type CAConfig struct {
-	CryptoConfig				`yaml:"crypto"`
-	Url 				string	`yaml:"url"`
-	SkipTLSValidation 	bool 	`yaml:"skipTLSValidation"`
-	MspId             	string 	`yaml:"mspId"`
-	FilePath			string	`yaml:"filepath"`
+	CryptoConfig      `yaml:"crypto"`
+	Url               string `yaml:"url"`
+	SkipTLSValidation bool   `yaml:"skipTLSValidation"`
+	MspId             string `yaml:"mspId"`
+	FilePath          string `yaml:"filepath"`
 }
 
 type CryptoConfig struct {
@@ -39,9 +39,8 @@ func IsPathExists(filepath string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if !fi.IsDir(){
+	if !fi.IsDir() {
 		return false, fmt.Errorf("The path: %s is not directory", filepath)
 	}
 	return true, nil
 }
-

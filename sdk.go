@@ -2,7 +2,7 @@ package Casdk
 
 import (
 	"path"
-	)
+)
 
 func InitCASDK(configPth string, configFile string) error {
 	caconfigFilePath := path.Join(configPth, configFile)

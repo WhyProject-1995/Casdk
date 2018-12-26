@@ -1,21 +1,21 @@
 package Casdk
 
 import (
-	"crypto/elliptic"
 	"crypto/ecdsa"
-	"hash"
-	"crypto/x509"
+	"crypto/elliptic"
+	"crypto/rand"
 	"crypto/sha256"
 	"crypto/sha512"
-	"golang.org/x/crypto/sha3"
-	"crypto/rand"
-		"encoding/asn1"
-				"math/big"
+	"crypto/x509"
 	"crypto/x509/pkix"
-	"net"
-	"net/mail"
+	"encoding/asn1"
 	"encoding/pem"
 	"github.com/cloudflare/cfssl/csr"
+	"golang.org/x/crypto/sha3"
+	"hash"
+	"math/big"
+	"net"
+	"net/mail"
 	"os"
 )
 
@@ -83,9 +83,9 @@ func (c *ECCryptSuite) CreateCertificateRequest(enrollmentId string, key interfa
 	for i := range hosts {
 		if ip := net.ParseIP(hosts[i]); ip != nil {
 			ipAddr = append(ipAddr, ip)
-		}else if email, err := mail.ParseAddress(hosts[i]); err == nil && email != nil {
+		} else if email, err := mail.ParseAddress(hosts[i]); err == nil && email != nil {
 			emailAddr = append(emailAddr, email.Address)
-		}else {
+		} else {
 			dnsAddr = append(dnsAddr, hosts[i])
 		}
 	}

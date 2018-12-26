@@ -1,18 +1,18 @@
 package Casdk
 
 import (
-	"net/http"
-	"net/url"
-	"encoding/json"
-	"fmt"
 	"bytes"
 	"crypto/tls"
-	"io/ioutil"
-	"encoding/base64"
-	"encoding/pem"
 	"crypto/x509"
+	"encoding/base64"
+	"encoding/json"
+	"encoding/pem"
+	"fmt"
 	"github.com/cloudflare/cfssl/csr"
-	)
+	"io/ioutil"
+	"net/http"
+	"net/url"
+)
 
 type FabricCAClient struct {
 	// Uri is access point for fabric-ca server. Port number and scheme must be provided.
@@ -30,11 +30,11 @@ type FabricCAClient struct {
 	// This value is not used anywhere in CA implementation, but is need in every call to Fabric and is added here
 	// for convenience, because (in general case) FabricCA is serving one MSP
 	// User can overwrite this value at any time.
-	MspId 		string
+	MspId string
 	//
-	FilePath    string
+	FilePath string
 	//
-	ServerInfo  ServerInfo
+	ServerInfo ServerInfo
 }
 
 var CA *FabricCAClient
@@ -43,6 +43,7 @@ type ServerInfo struct {
 	CAName string
 	CACert *x509.Certificate
 }
+
 // RegistrationRequest holds all data needed for new registration of new user in Certificate Authority
 type CARegistrationRequest struct {
 	// EnrolmentId is unique name that identifies identity
@@ -63,6 +64,7 @@ type CARegistrationRequest struct {
 	// this names are used to distinguish between them. If empty default CA instance will be used.
 	CAName string `json:"caname,omitempty" skip:"true"`
 }
+
 // CaRegisterAttribute holds user attribute used for registration
 // for example user may have attr `accountType` with value `premium`
 // this attributes can be accessed in chainCode and build business logic on top of them
@@ -78,8 +80,9 @@ type CaRegisterAttribute struct {
 
 type certificateRequest struct {
 	CaEnrollmentRequest
-	CR string 	`json:"certificate_request"`
+	CR string `json:"certificate_request"`
 }
+
 // enrollmentResponse is response from fabric-ca server for enrolment that contains created Ecert
 type enrollmentResponse struct {
 	caResponse
@@ -87,9 +90,9 @@ type enrollmentResponse struct {
 }
 
 type enrollmentResponseResult struct {
-	Cert 		string
-	ServerInfo	enrollmentResponseServerInfo
-	Version		string
+	Cert       string
+	ServerInfo enrollmentResponseServerInfo
+	Version    string
 }
 
 type enrollmentResponseServerInfo struct {
@@ -99,14 +102,14 @@ type enrollmentResponseServerInfo struct {
 
 // CAResponse represents response message from fabric-ca server
 type caResponse struct {
-	Success  bool 		      `json:"success"`
+	Success  bool            `json:"success"`
 	Errors   []caResponseErr `json:"errors"`
-	Messages []string		  `json:"messages"`
+	Messages []string        `json:"messages"`
 }
 
 type caResponseErr struct {
-	Code 	int     `json:"code"`
-	Message string  `json:"message"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 type CaEnrollAttribute struct {
@@ -144,18 +147,20 @@ type CaEnrollmentRequest struct {
 }
 
 type CSRInfo struct {
-	CN			 string 			`json:CN"`
-	Names		 []csr.Name 		`json:"names,omitempty"`
-	Hosts		 []string 			`json:"hosts,omitempty"`
-	KeyRequest  *BasicKeyRequest 	`json:"key,omitempty"`
-	CA			 *csr.CAConfig		`json:"ca,omitempty"`
-	SerialNumber string            `json:"serial_number,omitempty"`
+	CN           string           `json:CN"`
+	Names        []csr.Name       `json:"names,omitempty"`
+	Hosts        []string         `json:"hosts,omitempty"`
+	KeyRequest   *BasicKeyRequest `json:"key,omitempty"`
+	CA           *csr.CAConfig    `json:"ca,omitempty"`
+	SerialNumber string           `json:"serial_number,omitempty"`
 }
+
 // BasicKeyRequest encapsulates size and algorithm for the key to be generated
 type BasicKeyRequest struct {
 	Algo string `json:"algo" yaml:"algo"`
 	Size int    `json:"size" yaml:"size"`
 }
+
 // CARegisterCredentialResponse credentials from fabric-ca server registration request
 type caRegisterCredentialResponse struct {
 	Secret string `json:"secret"`
@@ -165,6 +170,7 @@ type caRegisterResponse struct {
 	caResponse
 	Result caRegisterCredentialResponse `json:"result"`
 }
+
 // CAGetCertsResponse holds response from `GetCaCertificateChain`
 type CAGetCertResponse struct {
 	// RootCertificates is list of pem encoded certificates
@@ -232,11 +238,11 @@ type caRevokeResponse struct {
 }
 
 type CaIdentityResponse struct {
-	ID 				string 					`json:"id"`
-	Type 			string 					`json:"type"`
-	Affiliation 	string 					`json:"affiliation"`
-	Attributes 		[]CaRegisterAttribute 	`json:"attrs" mapstructure:"attrs"`
-	MaxEnrollments 	int 					`json:"max_enrollments" mapstructure:"max_enrollments"`
+	ID             string                `json:"id"`
+	Type           string                `json:"type"`
+	Affiliation    string                `json:"affiliation"`
+	Attributes     []CaRegisterAttribute `json:"attrs" mapstructure:"attrs"`
+	MaxEnrollments int                   `json:"max_enrollments" mapstructure:"max_enrollments"`
 }
 
 type CAGetIdentityResponse struct {
@@ -250,7 +256,7 @@ type caGetIdentity struct {
 }
 
 type CAListAllIdentitesResponse struct {
-	CAName string `json:"caname"`
+	CAName     string               `json:"caname"`
 	Identities []CaIdentityResponse `json:"identities,omitempty"`
 }
 
@@ -289,13 +295,14 @@ func NewCaClientFromConfig(config CAConfig, transport *http.Transport) (*FabricC
 		return nil, ErrInvalidAlgorithmFamily
 	}
 	CA = &FabricCAClient{SkipTLSVerification: config.SkipTLSValidation,
-		Url: config.Url,
-		Crypto: crypto,
+		Url:       config.Url,
+		Crypto:    crypto,
 		Transport: transport,
-		MspId: config.MspId,
-		FilePath: config.FilePath}
+		MspId:     config.MspId,
+		FilePath:  config.FilePath}
 	return CA, nil
 }
+
 //Enroll execute enrollment request for registered user in FabricCA server.
 //On success new Identity with ECert and generated csr are returned.
 func (f *FabricCAClient) Enroll(request CaEnrollmentRequest) (*Identity, []byte, error) {
@@ -311,7 +318,7 @@ func (f *FabricCAClient) Enroll(request CaEnrollmentRequest) (*Identity, []byte,
 			return nil, nil, err
 		}
 		hosts = []string{parsedUrl.Host}
-	}else {
+	} else {
 		hosts = request.Hosts
 	}
 
@@ -376,6 +383,7 @@ func (f *FabricCAClient) Enroll(request CaEnrollmentRequest) (*Identity, []byte,
 	}
 	return nil, nil, fmt.Errorf("non 200 response: %v message is: %s", resp.StatusCode, string(body))
 }
+
 // Register registers new user in fabric-ca server. In registration request attributes, affiliation and
 // max enrolments must be set.
 // It is responsibility of the SDK user to ensure passwords are with big entropy.
@@ -438,6 +446,7 @@ func (f *FabricCAClient) Register(identity *Identity, req *CARegistrationRequest
 	}
 	return "", fmt.Errorf("non 200 response: %v message is: %s", resp.StatusCode, string(body))
 }
+
 // GetCaCertificateChain gets root and intermediate certificates used by FabricCA server.
 // This certificates must be presented to Fabric entities (peers, orderers) as MSP so they can verify that request
 // are from valid entities.
@@ -500,25 +509,26 @@ func (f *FabricCAClient) GetCaCertificateChain(caName string) (*CAGetCertRespons
 			// then it is a root certificate
 			if len(cert.AuthorityKeyId) == 0 || bytes.Equal(cert.AuthorityKeyId, cert.SubjectKeyId) {
 				root = append(root, cert)
-			}else {
+			} else {
 				intermediate = append(intermediate, block)
 			}
 		}
 		return &CAGetCertResponse{
-			RootCertificates: root,
+			RootCertificates:         root,
 			IntermediateCertificates: intermediate,
-			Version: result.Result.Version,
-			CAName: result.Result.CAName,
+			Version:                  result.Result.Version,
+			CAName:                   result.Result.CAName,
 		}, nil
 	}
 	return nil, fmt.Errorf("non 200 response: %v message is: %s", resp.StatusCode, string(body))
 }
+
 // createAuthToken creates http authorization header token to verify the request.
 // it is composed by base64 encoded Cert concatenated by base64 encoded request signed with Cert private key
 func (f *FabricCAClient) createAuthToken(identity *Identity, request []byte) (string, error) {
 	encPm := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "CERTIFICATE",
+			Type:  "CERTIFICATE",
 			Bytes: identity.Certificate.Raw,
 		},
 	)
@@ -539,11 +549,12 @@ func (f *FabricCAClient) getTransport() *http.Transport {
 		tr = &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: f.SkipTLSVerification},
 		}
-	}else {
+	} else {
 		tr = f.Transport
 	}
 	return tr
 }
+
 // Revoke revokes ECert in fabric-ca server.
 // Note that this request will revoke certificate ONLY in FabricCa server. Peers (for now) do not know
 // about this certificate revocation.
@@ -639,6 +650,7 @@ func (f *FabricCAClient) GetIndentity(identity *Identity, id string, caName stri
 	}
 	return nil, fmt.Errorf("non 200 response: %v message is: %s", resp.StatusCode, string(body))
 }
+
 // ListAllIdentities get list of all identities from FabricCa server
 func (f *FabricCAClient) GetIdentities(identity *Identity, caName string) (*CAListAllIdentitesResponse, error) {
 	if identity == nil {

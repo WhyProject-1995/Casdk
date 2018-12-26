@@ -1,13 +1,13 @@
 package Casdk
 
 import (
+	"crypto/ecdsa"
 	"crypto/x509"
-	"path"
-	"os"
+	"encoding/base64"
 	"encoding/pem"
 	"io/ioutil"
-	"crypto/ecdsa"
-	"encoding/base64"
+	"os"
+	"path"
 )
 
 type Identity struct {
@@ -56,17 +56,17 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 		return err
 	}
 	//保存tls证书
-//	if enreq.Profile == "tls" {
-//		err = saveTLScert(ca, i, cainfo)
-//		if err != nil {
-//			return err
-//		}
-//		return nil
-//	}
+	//	if enreq.Profile == "tls" {
+	//		err = saveTLScert(ca, i, cainfo)
+	//		if err != nil {
+	//			return err
+	//		}
+	//		return nil
+	//	}
 
 	if enreq == nil {
 		mspDir = path.Join(ca.FilePath, "/msp")
-	}else {
+	} else {
 		mspfile := enreq.EnrollmentId + "msp"
 		mspDir = path.Join(ca.FilePath, mspfile)
 	}
@@ -79,7 +79,7 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 	caFile := path.Join(caPath, "ca-cert.pem")
 	ca_pem := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "CERTIFICATE",
+			Type:  "CERTIFICATE",
 			Bytes: cainfo.RootCertificates[0].Raw,
 		},
 	)
@@ -115,7 +115,7 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 	certFile := path.Join(certPath, "cert.pem")
 	cert_pem := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "CERTIFICATE",
+			Type:  "CERTIFICATE",
 			Bytes: i.Certificate.Raw,
 		},
 	)
@@ -136,7 +136,7 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 	}
 	key_pem := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "PRIVATE KEY",
+			Type:  "PRIVATE KEY",
 			Bytes: key_byte,
 		},
 	)
@@ -146,6 +146,7 @@ func (i *Identity) SaveCert(ca *FabricCAClient, enreq *CaEnrollmentRequest, cain
 	}
 	return nil
 }
+
 //保存crl
 func SaveCrl(ca *FabricCAClient, request *CARevocationRequest, result *CARevokeResult) error {
 	var err error
@@ -164,7 +165,7 @@ func SaveCrl(ca *FabricCAClient, request *CARevocationRequest, result *CARevokeR
 	}
 	crl_pem := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "X509 CRL",
+			Type:  "X509 CRL",
 			Bytes: crl,
 		},
 	)
@@ -188,7 +189,7 @@ func (i *Identity) SaveTLScert(ca *FabricCAClient, cainfo *CAGetCertResponse) er
 	caFile := path.Join(caPath, "ca-cert.pem")
 	ca_pem := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "CERTIFICATE",
+			Type:  "CERTIFICATE",
 			Bytes: cainfo.RootCertificates[0].Raw,
 		},
 	)
@@ -224,7 +225,7 @@ func (i *Identity) SaveTLScert(ca *FabricCAClient, cainfo *CAGetCertResponse) er
 	certFile := path.Join(certPath, "cert.pem")
 	cert_pem := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "CERTIFICATE",
+			Type:  "CERTIFICATE",
 			Bytes: i.Certificate.Raw,
 		},
 	)
@@ -245,7 +246,7 @@ func (i *Identity) SaveTLScert(ca *FabricCAClient, cainfo *CAGetCertResponse) er
 	}
 	key_pem := pem.EncodeToMemory(
 		&pem.Block{
-			Type: "PRIVATE KEY",
+			Type:  "PRIVATE KEY",
 			Bytes: key_byte,
 		},
 	)
